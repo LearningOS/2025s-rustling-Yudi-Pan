@@ -2,7 +2,6 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
@@ -69,15 +68,62 @@ impl<T> LinkedList<T> {
             },
         }
     }
-	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
-	{
-		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
+	pub fn merge(mut list_a:LinkedList<T>,mut list_b:LinkedList<T>) -> Self
+	where
+        T: Ord,
+    {
+            let mut new_list = LinkedList::new();
+        
+            let mut a_ptr = list_a.start.take();
+            let mut b_ptr = list_b.start.take();
+        
+            while let (Some(a), Some(b)) = (a_ptr, b_ptr) {
+                let a_ref = unsafe { &*a.as_ptr() };
+                let b_ref = unsafe { &*b.as_ptr() };
+        
+                if a_ref.val <= b_ref.val {
+                    a_ptr = a_ref.next;
+                    let node = unsafe { Box::from_raw(a.as_ptr()) };
+                    new_list.push_node(node);
+                } else {
+                    b_ptr = b_ref.next;
+                    let node = unsafe { Box::from_raw(b.as_ptr()) };
+                    new_list.push_node(node);
+                }
+            }
+        
+            // Append remaining nodes
+            while let Some(a) = a_ptr {
+                let node = unsafe { Box::from_raw(a.as_ptr()) };
+                a_ptr = node.next;
+                new_list.push_node(node);
+            }
+        
+            while let Some(b) = b_ptr {
+                let node = unsafe { Box::from_raw(b.as_ptr()) };
+                b_ptr = node.next;
+                new_list.push_node(node);
+            }
+        
+            new_list
         }
-	}
+        
+        // 追加一个辅助方法用于移动节点
+        fn push_node(&mut self, mut node: Box<Node<T>>) {
+            node.next = None;
+            let node_ptr = Some(unsafe { NonNull::new_unchecked(Box::into_raw(node)) });
+        
+            match self.end {
+                None => self.start = node_ptr,
+                Some(end_ptr) => unsafe {
+                    (*end_ptr.as_ptr()).next = node_ptr;
+                },
+            }
+        
+            self.end = node_ptr;
+            self.length += 1;
+        }
+        
 }
 
 impl<T> Display for LinkedList<T>
