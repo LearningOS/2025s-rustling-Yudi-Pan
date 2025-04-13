@@ -2,7 +2,6 @@
 	graph
 	This problem requires you to implement a basic graph functio
 */
-// I AM NOT DONE
 
 use std::collections::{HashMap, HashSet};
 use std::fmt;
@@ -29,7 +28,26 @@ impl Graph for UndirectedGraph {
         &self.adjacency_table
     }
     fn add_edge(&mut self, edge: (&str, &str, i32)) {
-        //TODO
+        let adj= self.adjacency_table_mutable();
+        let (node_1,node_2,weight) = edge;
+        if !adj.contains_key(node_1) {
+            adj.insert(node_1.to_string(), Vec::new());
+        }
+
+        if !adj.contains_key(node_2) {
+            adj.insert(node_2.to_string(), Vec::new());
+        }
+        
+        if let Some(vec) = adj.get_mut(node_1) {
+            vec.push((String::from(node_2),weight));
+        } else {
+            panic!("error in add_edge");
+        }
+        if let Some(vec) = adj.get_mut(node_2) {
+            vec.push((String::from(node_1),weight));
+        } else {
+            panic!("error in add_edge");
+        }
     }
 }
 pub trait Graph {
@@ -37,11 +55,26 @@ pub trait Graph {
     fn adjacency_table_mutable(&mut self) -> &mut HashMap<String, Vec<(String, i32)>>;
     fn adjacency_table(&self) -> &HashMap<String, Vec<(String, i32)>>;
     fn add_node(&mut self, node: &str) -> bool {
-        //TODO
-		true
+        let adj= self.adjacency_table_mutable();
+        let k = String::from(node);
+        if adj.contains_key(&k) {
+            false
+        } else {
+            adj.insert(k, Vec::new());
+            true
+        }
     }
     fn add_edge(&mut self, edge: (&str, &str, i32)) {
-        //TODO
+        let adj= self.adjacency_table_mutable();
+        if !adj.contains_key(edge.0) {
+            adj.insert(edge.0.to_string(), Vec::new());
+        }
+
+        if let Some(vec) = adj.get_mut(edge.0) {
+            vec.push((String::from(edge.1),edge.2));
+        } else {
+            panic!("error in add_edge");
+        }
     }
     fn contains(&self, node: &str) -> bool {
         self.adjacency_table().get(node).is_some()
