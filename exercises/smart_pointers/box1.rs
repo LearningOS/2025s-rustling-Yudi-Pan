@@ -18,6 +18,9 @@
 //
 // Execute `rustlings hint box1` or use the `hint` watch subcommand for a hint.
 
+use crate::List::Cons;
+use crate::List::Nil;
+
 #[derive(PartialEq, Debug)]
 pub enum List {
     Cons(i32, Box<List>),

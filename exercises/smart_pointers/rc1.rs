@@ -89,13 +89,13 @@ fn main() {
     drop(mars);
     println!("reference count = {}", Rc::strong_count(&sun)); // 4 references
 
-    drop(saturn);
+    drop(earth);
     println!("reference count = {}", Rc::strong_count(&sun)); // 3 references
 
-    drop(uranus);
+    drop(venus);
     println!("reference count = {}", Rc::strong_count(&sun)); // 2 references
 
-    drop(neptune);
+    drop(mercury);
     println!("reference count = {}", Rc::strong_count(&sun)); // 1 reference
 
     assert_eq!(Rc::strong_count(&sun), 1);
